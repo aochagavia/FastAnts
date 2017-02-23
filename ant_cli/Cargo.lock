@@ -1,0 +1,11 @@
+[root]
+name = "ant_cli"
+version = "0.1.0"
+dependencies = [
+ "ant_lib 0.1.0",
+]
+
+[[package]]
+name = "ant_lib"
+version = "0.1.0"
+
