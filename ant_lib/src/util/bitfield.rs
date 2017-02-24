@@ -28,6 +28,10 @@ impl BitField8 {
     pub fn any(self) -> bool {
         self.bits != 0
     }
+
+    pub fn iter(self) -> impl Iterator<Item=u8> {
+        (0...5).filter(move |&x| self.is_set(x))
+    }
 }
 
 #[test]

@@ -112,11 +112,15 @@ impl World {
 
         let new_x = x as isize + dx;
         let new_y = y as isize + dy;
-        new_y as usize * width + new_x as usize
+        World::coords_to_index(width, new_x as usize, new_y as usize)
     }
 
     pub fn index_to_coords(width: usize, i: usize) -> (usize, usize) {
         (i % width, i / width)
+    }
+
+    pub fn coords_to_index(width: usize, x: usize, y: usize) -> usize {
+        y * width + x
     }
 }
 
