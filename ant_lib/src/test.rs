@@ -1,5 +1,6 @@
 use ant::AntDirection;
-use simulator::{adjacent_position, Simulator};
+use simulator::Simulator;
+use world::World;
 use test_data::{ant1, default_program, sample0};
 
 #[test]
@@ -23,22 +24,22 @@ fn test_adjacent_position() {
     use self::AntDirection::*;
     let width = 100;
     // One step to the right
-    assert_eq!(adjacent_position(width, 0, Right), 1);
+    assert_eq!(World::adjacent_position(width, 0, Right), 1);
 
     // One step to the right, from (0, 2)
-    assert_eq!(adjacent_position(width, 2 * width, Right), 2 * width + 1);
+    assert_eq!(World::adjacent_position(width, 2 * width, Right), 2 * width + 1);
 
     // One step to the left
-    assert_eq!(adjacent_position(width, width - 1, Left), width - 2);
+    assert_eq!(World::adjacent_position(width, width - 1, Left), width - 2);
 
     // One step to the left, from (1, 2)
-    assert_eq!(adjacent_position(width, 2 * width + 1, Left), 2 * width);
+    assert_eq!(World::adjacent_position(width, 2 * width + 1, Left), 2 * width);
 
     // One step up-right, from (0, 1)
-    assert_eq!(adjacent_position(width, width, UpRight), 1);
+    assert_eq!(World::adjacent_position(width, width, UpRight), 1);
 
     // One step up-right, from (0, 2)
-    assert_eq!(adjacent_position(width, 2 * width, UpRight), width);
+    assert_eq!(World::adjacent_position(width, 2 * width, UpRight), width);
 
     // Other possible tests: up-left, down-right, down-left
 }
