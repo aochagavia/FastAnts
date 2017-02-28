@@ -179,9 +179,9 @@ impl View {
 
             // Right column
             let mut trans = abs_trans.trans(450.0, 50.0);
-            print("Black", &mut trans);
-            print(&black_score_str, &mut trans);
-            print(&black_alive_str, &mut trans);
+            print("Red", &mut trans);
+            print(&red_score_str, &mut trans);
+            print(&red_alive_str, &mut trans);
 
             // Bottom, centered
             let mut trans = abs_trans.trans(200.0, food_left_pos);
