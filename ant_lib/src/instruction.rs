@@ -18,6 +18,26 @@ pub enum Instruction {
     Flip(InvChance, AntState, AntState)
 }
 
+impl Instruction {
+    pub fn parse<R>(reader: R) -> Vec<Instruction>
+    where R: BufRead {
+        let mut instrs = Vec::new();
+        for line in reader.lines() {
+            let line = line.unwrap();
+            let line = line.trim();
+            if line.is_empty() {
+                break;
+            }
+
+            instrs.push(parse_instruction(&line.to_uppercase()));
+        }
+
+        assert!(instrs.len() < 10_000, "Too many states");
+
+        instrs
+    }
+}
+
 #[derive(Clone, Copy)]
 pub enum SenseDir {
     Here,
@@ -63,24 +83,6 @@ impl Condition {
             (FoeWithFood   , &Some(ref ant)) => ant.color != color && ant.has_food,
         }
     }
-}
-
-pub fn parse<R>(reader: R) -> Vec<Instruction>
-where R: BufRead {
-    let mut instrs = Vec::new();
-    for line in reader.lines() {
-        let line = line.unwrap();
-        let line = line.trim();
-        if line.is_empty() {
-            break;
-        }
-
-        instrs.push(parse_instruction(&line.to_uppercase()));
-    }
-
-    assert!(instrs.len() < 10_000, "Too many states");
-
-    instrs
 }
 
 fn parse_instruction(s: &str) -> Instruction {

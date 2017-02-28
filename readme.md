@@ -48,4 +48,4 @@ marks per cell).
 
 # Specifying custom worlds and ant instructions
 
-A CLI is not yet implemented. Coming soon!
+Run `ant_viz --help` to see how to use the CLI in order to specify custom worlds and instructions.

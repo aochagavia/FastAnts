@@ -1,6 +1,6 @@
 use std::io::{Cursor, BufReader};
 
-use instruction::{self, Instruction};
+use instruction::Instruction;
 use world::World;
 
 pub fn sample0() -> World {
@@ -132,7 +132,7 @@ Move 8 11
 ";
 
     let buffer = BufReader::new(Cursor::new(instrs_str));
-    instruction::parse(buffer)
+    Instruction::parse(buffer)
 }
 
 pub fn ant1() -> Vec<Instruction> {
@@ -2472,5 +2472,5 @@ Mark 0 1813
 ";
 
     let reader = BufReader::new(Cursor::new(instrs_str));
-    instruction::parse(reader)
+    Instruction::parse(reader)
 }

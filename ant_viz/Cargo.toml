@@ -7,3 +7,5 @@ authors = ["Adolfo Ochagavía <aochagavia92@gmail.com>"]
 ant_lib = { path = "../ant_lib" }
 piston_window = "0.63.0"
 piston2d-opengl_graphics = "0.39.0"
+structopt = "0.0.3"
+structopt-derive = "0.0.3"

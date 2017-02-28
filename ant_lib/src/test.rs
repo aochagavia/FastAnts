@@ -47,7 +47,7 @@ fn test_adjacent_position() {
 #[test]
 fn test_create_simulator() {
     let world = sample0();
-    let simulator = Simulator::new(world, ant1(), ant1());
+    let simulator = Simulator::new(world, ant1(), ant1(), 100_000);
     assert_eq!(simulator.ants.len(), 182);
 
     // The ids are stored in ascending order in the positions vector
@@ -63,9 +63,10 @@ fn test_create_simulator() {
 fn test_run_simulator() {
     let world = sample0();
     let instr = default_program();
-    let mut simulator = Simulator::new(world, instr.clone(), instr);
+    let mut simulator = Simulator::new(world, instr.clone(), instr, 100_000);
     assert_eq!(simulator.world.count_ants(), 182);
-    let outcome = simulator.run_rounds(10_000);
+    simulator.run_rounds(10_000);
+    let outcome = simulator.partial_outcome();
     assert_eq!(outcome.red_score, 0);
     assert_eq!(outcome.black_score, 7);
 }

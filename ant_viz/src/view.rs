@@ -135,7 +135,6 @@ impl View {
         }
 
         if self.show_score {
-            let max_ants = "91";
             let red_score_str = outcome.red_score.to_string();
             let red_alive_str = outcome.red_alive.to_string();
             let black_score_str = outcome.black_score.to_string();
