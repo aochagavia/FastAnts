@@ -20,23 +20,31 @@ from the [official website](https://www.rust-lang.org/en-US/other-installers.htm
 
 # Compiling and running
 
-This should be as easy as getting into `ant_viz` and running `cargo run --release`.
+This should be as easy as the following:
+
+```
+cd ant_viz
+cargo run --release
+```
+
 The resulting binary is stored at `ant_viz/target/release`.
 
 Note that the build requires a bunch of dependencies, so it may take three to five minutes
-to compile for the first time.
-
-Also, if you don't want the binary to be run afterwards, you can use `cargo build --release`
-instead.
+to compile for the first time. Also, if you don't want the binary to be run afterwards, you
+can use `cargo build --release` instead.
 
 # Controls
 
-Keyboard                | Action
------------------------ | -----------------------
-Arrow keys              | Move camera around
-t                       | Toggle scoreboard
-m                       | Toggle mark showing
-+ and -                 | Increase/decrease speed
+Keyboard                | Action                  | Console output
+----------------------- | ------------------------|----------------------------
+Arrow keys              | Move camera around      |
+t                       | Toggle scoreboard       |
+m                       | Toggle mark showing     | Active color
++ and -                 | Increase/decrease speed | Amount of rounds per second
+
+Note that, by default, `ant_viz` does not show the marks left by the ants. Also, when toggling
+mark showing, we only show the marks of one team at a time (since we need to display up to 6
+marks per cell).
 
 # Specifying custom worlds and ant instructions
 

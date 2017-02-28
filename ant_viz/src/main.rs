@@ -16,6 +16,7 @@ use view::View;
 
 const SCR_WIDTH: u32 = 1024;
 const SCR_HEIGHT: u32 = 600;
+const UPS: u32 = 5;
 
 fn main() {
     let opengl = OpenGL::V3_2;
@@ -23,7 +24,7 @@ fn main() {
         .opengl(opengl).samples(8).exit_on_esc(true).build().unwrap();
 
     // One round per update, 5 rounds per second
-    window.set_ups(5);
+    window.set_ups(UPS);
     window.set_max_fps(30);
 
     let mut gl = GlGraphics::new(opengl);
@@ -61,7 +62,7 @@ fn main() {
                         if rounds_per_update > 0 {
                             rounds_per_update -= 1;
                         }
-                        println!("[UPDATE] rounds per update: {}", rounds_per_update);
+                        println!("[UPDATE] rounds per second: {}", rounds_per_update * UPS);
                     }
                     "m" => {
                         view.toggle_marks();
@@ -69,7 +70,6 @@ fn main() {
                     }
                     "t" => {
                         view.show_score = !view.show_score;
-                        println!("[UPDATE] show score: {}", view.show_score);
                     }
                     _   => ()
                 }
