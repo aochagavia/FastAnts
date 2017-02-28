@@ -1,6 +1,8 @@
 FastAnts
 ========
 
+![Screenshot](screenshots/screenshot1.png)
+
 This is a Rust implementation of the simulator and visualizer for the ant language
 used in 2004's edition of the [ICFP Programming Contest](https://alliance.seas.upenn.edu/~plclub/cgi-bin/contest/)
 
