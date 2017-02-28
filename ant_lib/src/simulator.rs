@@ -65,7 +65,11 @@ impl Simulator {
     }
 
     pub fn run(mut self) -> Outcome {
-        self.run_rounds(100_000)
+        for _ in 0..100_000 {
+            self.one_round();
+        }
+
+        self.partial_outcome()
     }
 
     pub fn run_rounds(&mut self, rounds: u32) -> Outcome {
@@ -79,16 +83,11 @@ impl Simulator {
     pub fn partial_outcome(&self) -> Outcome {
         let red_score = self.world.count_red_food();
         let black_score = self.world.count_black_food();
-        let red_alive = self.count_alive_ants(AntColor::Red);
-        let black_alive = self.count_alive_ants(AntColor::Black);
+        let red_alive = self.world.count_red_ants();
+        let black_alive = self.world.count_black_ants();
+        let food_left = self.world.count_food();
 
-        Outcome { red_score, red_alive, black_score, black_alive }
-    }
-
-    fn count_alive_ants(&self, color: AntColor) -> u16 {
-        self.ants.iter().filter(|&&pos| pos != usize::MAX
-                                     && self.ant(pos).color == color)
-                        .count() as u16
+        Outcome { red_score, red_alive, black_score, black_alive, food_left }
     }
 
     fn get_instruction(&self, state: AntState, color: AntColor) -> Instruction {
@@ -253,10 +252,11 @@ fn sensed_position(width: usize, ant_index: usize, ant_direction: AntDirection, 
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Outcome {
-    pub red_score: u32,
+    pub red_score: u16,
     pub red_alive: u16,
-    pub black_score: u32,
-    pub black_alive: u16
+    pub black_score: u16,
+    pub black_alive: u16,
+    pub food_left: u16
 }

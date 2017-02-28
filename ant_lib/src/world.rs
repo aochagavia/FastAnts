@@ -64,20 +64,32 @@ impl World {
         ants
     }
 
-    pub fn count_red_food(&self) -> u32 {
-        self.red_anthill.iter().map(|&i| self.cells[i].food as u32).sum()
+    pub fn count_red_food(&self) -> u16 {
+        self.red_anthill.iter().map(|&i| self.cells[i].food as u16).sum()
     }
 
-    pub fn count_black_food(&self) -> u32 {
-        self.black_anthill.iter().map(|&i| self.cells[i].food as u32).sum()
+    pub fn count_black_food(&self) -> u16 {
+        self.black_anthill.iter().map(|&i| self.cells[i].food as u16).sum()
     }
 
-    pub fn count_ants(&self) -> u32 {
-        self.cells.iter().filter(|cell| cell.ant.is_some()).count() as u32
+    pub fn count_ants(&self) -> u16 {
+        self.cells.iter().filter(|cell| cell.ant.is_some()).count() as u16
     }
 
-    pub fn count_food(&self) -> u32 {
-        self.cells.iter().map(|cell| cell.food as u32).sum()
+    pub fn count_red_ants(&self) -> u16 {
+        self.cells.iter().filter_map(|cell| cell.ant.as_ref())
+                         .filter(|ant| ant.color == AntColor::Red)
+                         .count() as u16
+    }
+
+    pub fn count_black_ants(&self) -> u16 {
+        self.cells.iter().filter_map(|cell| cell.ant.as_ref())
+                         .filter(|ant| ant.color == AntColor::Black)
+                         .count() as u16
+    }
+
+    pub fn count_food(&self) -> u16 {
+        self.cells.iter().map(|cell| cell.food as u16).sum()
     }
 
     pub fn count_rocks(&self) -> u32 {

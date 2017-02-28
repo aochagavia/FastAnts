@@ -6,7 +6,7 @@ mod camera;
 mod mouse;
 mod view;
 
-use ant_lib::{test_data, Simulator, Instruction, TurnDir};
+use ant_lib::{test_data, Instruction, Outcome, Simulator, TurnDir};
 use piston_window::{Button, EventLoop, Input, Key, Motion, MouseButton, OpenGL, PistonWindow, WindowSettings};
 use opengl_graphics::GlGraphics;
 
@@ -31,11 +31,12 @@ fn main() {
     // FIXME: allow the user to specify the world and the programs
     let go_right = vec![Instruction::Move(0, 1), Instruction::Mark(0, 0)];
     let mut simulator = Simulator::new(test_data::sample0(), go_right, test_data::default_program());
+    let mut partial_outcome = Outcome::default();
     let mut view = View::new(Camera::new(SCR_WIDTH as f64, SCR_HEIGHT as f64, &simulator.world));
     let mut mouse = Mouse::default();
 
     // Per update, run one round of the simulation. This results in 5 iterations per second.
-    let mut rounds_per_update = 1;
+    let mut rounds_per_update: u32 = 1;
 
     while let Some(e) = window.next() {
         // Event handling
@@ -57,12 +58,18 @@ fn main() {
                         println!("[UPDATE] rounds per update: {}", rounds_per_update);
                     }
                     "-" => {
-                        rounds_per_update -= 1;
+                        if rounds_per_update > 0 {
+                            rounds_per_update -= 1;
+                        }
                         println!("[UPDATE] rounds per update: {}", rounds_per_update);
                     }
                     "m" => {
                         view.toggle_marks();
                         println!("[UPDATE] toggle marks: {:?}", view.show_marks);
+                    }
+                    "t" => {
+                        view.show_score = !view.show_score;
+                        println!("[UPDATE] show score: {}", view.show_score);
                     }
                     _   => ()
                 }
@@ -74,12 +81,12 @@ fn main() {
             }
 
             Input::Render(args) => {
-                gl.draw(args.viewport(), |c, g| view.render(&simulator.world, c, g));
+                gl.draw(args.viewport(), |c, g| view.render(&simulator.world, &partial_outcome, c, g));
             }
 
             Input::Update(_) => {
                 // 5 rounds per second
-                simulator.run_rounds(rounds_per_update);
+                partial_outcome = simulator.run_rounds(rounds_per_update);
             }
 
             _ => {}

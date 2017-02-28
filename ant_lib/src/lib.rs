@@ -12,5 +12,5 @@ mod test;
 
 pub use ant::{AntColor, AntDirection};
 pub use instruction::{Instruction, TurnDir};
-pub use simulator::Simulator;
+pub use simulator::{Outcome, Simulator};
 pub use world::{Cell, World};
