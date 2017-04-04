@@ -55,6 +55,12 @@ fn load_world(path: &str) -> World {
     World::parse(open_file_or_die(path))
 }
 
+enum JumpToRound {
+    No,
+    Later(String),
+    Now(String)
+}
+
 fn main() {
     let options = Options::from_args();
 
@@ -73,7 +79,7 @@ fn main() {
         test_data::sample0()
     });
 
-    let mut simulator = Simulator::new(world, red, black, options.rounds);
+    let mut simulator = Simulator::new(world.clone(), red.clone(), black.clone(), options.rounds);
     let mut partial_outcome = Outcome::default();
     let mut view = View::new(Camera::new(SCR_WIDTH as f64, SCR_HEIGHT as f64, &simulator.world));
 
@@ -81,6 +87,7 @@ fn main() {
 
     let (mut window, mut gl) = init_window();
     let mut jump_to_finish = false;
+    let mut jump_to_round = JumpToRound::No;
     while let Some(e) = window.next() {
         // Event handling
         match e {
@@ -95,16 +102,25 @@ fn main() {
             }
 
             Input::Text(s) => {
-                match s.as_str() {
-                    "+" => {
+                if s.as_str().len() == 0 {
+                    // Enter key
+                    if let JumpToRound::Later(s) = jump_to_round {
+                        jump_to_round = JumpToRound::Now(s);
+                    }
+
+                    continue;
+                }
+
+                match s.as_str().as_bytes()[0] as char {
+                    '+' => {
                         rounds_per_update += 100;
                         println!("[UPDATE] rounds per update: {}", rounds_per_update);
                     }
-                    "-" => {
+                    '-' => {
                         rounds_per_update = cmp::max(0, rounds_per_update - 100);
                         println!("[UPDATE] rounds per update: {}", rounds_per_update * UPS);
                     }
-                    "m" => {
+                    'm' => {
                         view.toggle_marks();
                         let title = match view.show_marks {
                             None => "AntViz".to_string(),
@@ -113,11 +129,24 @@ fn main() {
                         };
                         window.set_title(title);
                     }
-                    "t" => {
+                    't' => {
                         view.show_score = !view.show_score;
                     }
-                    "f" => {
+                    'f' => {
                         jump_to_finish = true;
+                    }
+                    'j' => {
+                        // Initialize jump to round
+                        jump_to_round = JumpToRound::Later(String::new());
+                    }
+                    'c' => {
+                        // Cancel jump to round
+                        jump_to_round = JumpToRound::No;
+                    }
+                    x if x.is_numeric() => {
+                        if let JumpToRound::Later(ref mut s) = jump_to_round {
+                            s.push(x);
+                        }
                     }
                     _   => ()
                 }
@@ -136,7 +165,26 @@ fn main() {
                 if jump_to_finish {
                     partial_outcome = simulator.run();
                 } else {
-                    simulator.run_rounds(rounds_per_update);
+                    if let JumpToRound::Now(round) = jump_to_round {
+                        if round.len() > 0 {
+                            let round: u32 = round.parse().unwrap();
+
+                            if round >= simulator.round {
+                                // If the round is in the future, fast forward
+                                let sim_round = simulator.round;
+                                simulator.run_rounds(round - sim_round);
+                            } else {
+                                // If the round is in the past, rerun the simulation
+                                simulator = Simulator::new(world.clone(), red.clone(), black.clone(), options.rounds);
+                                simulator.run_rounds(round);
+                            }
+                        }
+
+                        jump_to_round = JumpToRound::No;
+                    } else {
+                        simulator.run_rounds(rounds_per_update);
+                    }
+
                     if view.show_score {
                         partial_outcome = simulator.partial_outcome();
                     }
