@@ -12,14 +12,14 @@ const INNER_CELL_WIDTH: f64 = CELL_WIDTH - 2.0 * CELL_BORDER;
 const CELL_BORDER: f64 = 1.0;
 pub const ROW_HEIGHT: f64 = 3.0 * CELL_WIDTH / 4.0;
 
-const MARKER_COLORS: [[f32; 4]; 6] = [
-    [1.0, 1.0, 1.0, 0.5],
-    [1.0, 0.0, 1.0, 0.5],
-    [1.0, 1.0, 0.0, 0.5],
-    [0.0, 1.0, 1.0, 0.5],
-    [0.0, 0.0, 1.0, 0.5],
-    [0.0, 1.0, 0.0, 0.5],
-];
+// const MARKER_COLORS: [[f32; 4]; 6] = [
+//     [1.0, 1.0, 1.0, 0.5],
+//     [1.0, 0.0, 1.0, 0.5],
+//     [1.0, 1.0, 0.0, 0.5],
+//     [0.0, 1.0, 1.0, 0.5],
+//     [0.0, 0.0, 1.0, 0.5],
+//     [0.0, 1.0, 0.0, 0.5],
+// ];
 
 pub struct View {
     pub cam: Camera,
@@ -45,7 +45,7 @@ impl View {
         self.show_marks = next_color;
     }
 
-    pub fn render(&mut self, world: &World, outcome: &Outcome, c: Context, g: &mut GlGraphics) {
+    pub fn render(&mut self, max_rounds: u32, world: &World, outcome: &Outcome, c: Context, g: &mut GlGraphics) {
         let abs_trans = c.transform;
         let trans = c.transform.trans(-self.cam.x, -self.cam.y);
 
@@ -89,7 +89,7 @@ impl View {
                 for mark in markers.iter() {
                     // Triangle in the right direction
                     piston_window::polygon(
-                        MARKER_COLORS[mark as usize],
+                        [1.0, 1.0, 0.0, 0.5],
                         &marker_polygon,
                         trans.trans(center_x, center_y).rot_rad(rotation(mark)),
                         g);
@@ -140,7 +140,7 @@ impl View {
             let black_score_str = outcome.black_score.to_string();
             let black_alive_str = outcome.black_alive.to_string();
             let food_left_str = format!("Food left: {}", outcome.food_left);
-            let food_left_pos = self.cam.scr_height - 50.0;
+            let rounds_str = format!("Rounds: {:5}/{}", outcome.round, max_rounds);
 
             // Center the rectangle
             let abs_trans = if self.cam.scr_width > 600.0 {
@@ -158,10 +158,26 @@ impl View {
                 g);
 
             let white = [1.0, 1.0, 1.0, 1.0];
+            let yellow = [1.0, 1.0, 0.0, 1.0];
             let size = 24;
 
+            let font = &mut self.font;
+
+            if outcome.round == max_rounds {
+                let winner = if outcome.black_score < outcome.red_score {
+                    "Red wins!"
+                } else if outcome.black_score > outcome.red_score {
+                    "Black wins!"
+                } else {
+                    "No winner!"
+                };
+
+                let trans = abs_trans.trans(200.0, self.cam.scr_height / 2.0);
+                piston_window::text(yellow, 36, winner, font, trans, g);
+            }
+
             let mut print = |s, t: &mut [[f64; 3]; 2]| {
-                piston_window::text(white, size, s, &mut self.font, *t, g);
+                piston_window::text(white, size, s, font, *t, g);
                 *t = t.trans(0.0, 44.0);
             };
 
@@ -183,8 +199,10 @@ impl View {
             print(&red_alive_str, &mut trans);
 
             // Bottom, centered
-            let mut trans = abs_trans.trans(200.0, food_left_pos);
+            let mut trans = abs_trans.trans(200.0, self.cam.scr_height - 100.0);
             print(&food_left_str, &mut trans);
+            trans = trans.trans(-50.0, 0.0);
+            print(&rounds_str, &mut trans);
         }
     }
 }

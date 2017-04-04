@@ -12,7 +12,7 @@ pub struct Simulator {
     pub ants: Vec<usize>,
     rng: Rng,
     round: u32,
-    max_rounds: u32,
+    pub max_rounds: u32,
 }
 
 impl Simulator {
@@ -72,7 +72,7 @@ impl Simulator {
         }
     }
 
-    pub fn run(mut self) -> Outcome {
+    pub fn run(&mut self) -> Outcome {
         for _ in self.round..self.max_rounds {
             self.one_round();
         }
@@ -92,8 +92,9 @@ impl Simulator {
         let red_alive = self.world.count_red_ants();
         let black_alive = self.world.count_black_ants();
         let food_left = self.world.count_food();
+        let round = self.round;
 
-        Outcome { red_score, red_alive, black_score, black_alive, food_left }
+        Outcome { red_score, red_alive, black_score, black_alive, food_left, round }
     }
 
     fn get_instruction(&self, state: AntState, color: AntColor) -> Instruction {
@@ -264,5 +265,6 @@ pub struct Outcome {
     pub red_alive: u16,
     pub black_score: u16,
     pub black_alive: u16,
-    pub food_left: u16
+    pub food_left: u16,
+    pub round: u32
 }

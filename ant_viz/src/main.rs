@@ -8,13 +8,14 @@ mod camera;
 mod cli;
 mod view;
 
+use std::cmp;
 use std::fs::File;
 use std::io::BufReader;
 use std::process;
 
-use ant_lib::{test_data, Instruction, Outcome, Simulator, World};
+use ant_lib::{test_data, AntColor, Instruction, Outcome, Simulator, World};
 use opengl_graphics::GlGraphics;
-use piston_window::{Button, EventLoop, Input, Key, OpenGL, PistonWindow, WindowSettings};
+use piston_window::{AdvancedWindow, Button, EventLoop, Input, Key, OpenGL, PistonWindow, WindowSettings};
 use structopt::StructOpt;
 
 use camera::Camera;
@@ -23,14 +24,13 @@ use view::View;
 
 const SCR_WIDTH: u32 = 1024;
 const SCR_HEIGHT: u32 = 600;
-const UPS: u32 = 5;
+const UPS: u32 = 2;
 
 fn init_window() -> (PistonWindow, GlGraphics) {
     let opengl = OpenGL::V3_2;
     let mut window: PistonWindow = WindowSettings::new("AntViz", [SCR_WIDTH, SCR_HEIGHT])
         .opengl(opengl).samples(8).exit_on_esc(true).build().unwrap();
 
-    // One round per update, 5 rounds per second
     window.set_ups(UPS as u64);
     window.set_max_fps(30);
 
@@ -77,10 +77,10 @@ fn main() {
     let mut partial_outcome = Outcome::default();
     let mut view = View::new(Camera::new(SCR_WIDTH as f64, SCR_HEIGHT as f64, &simulator.world));
 
-    // Per update, run one round of the simulation. This results in 5 iterations per second.
     let mut rounds_per_update: u32 = 1;
 
     let (mut window, mut gl) = init_window();
+    let mut jump_to_finish = false;
     while let Some(e) = window.next() {
         // Event handling
         match e {
@@ -97,21 +97,27 @@ fn main() {
             Input::Text(s) => {
                 match s.as_str() {
                     "+" => {
-                        rounds_per_update += 1;
+                        rounds_per_update += 100;
                         println!("[UPDATE] rounds per update: {}", rounds_per_update);
                     }
                     "-" => {
-                        if rounds_per_update > 0 {
-                            rounds_per_update -= 1;
-                        }
-                        println!("[UPDATE] rounds per second: {}", rounds_per_update * UPS);
+                        rounds_per_update = cmp::max(0, rounds_per_update - 100);
+                        println!("[UPDATE] rounds per update: {}", rounds_per_update * UPS);
                     }
                     "m" => {
                         view.toggle_marks();
-                        println!("[UPDATE] toggle marks: {:?}", view.show_marks);
+                        let title = match view.show_marks {
+                            None => "AntViz".to_string(),
+                            Some(AntColor::Red) => "AntViz - Showing red markers".to_string(),
+                            Some(AntColor::Black) => "AntViz - Showing black markers".to_string()
+                        };
+                        window.set_title(title);
                     }
                     "t" => {
                         view.show_score = !view.show_score;
+                    }
+                    "f" => {
+                        jump_to_finish = true;
                     }
                     _   => ()
                 }
@@ -123,14 +129,17 @@ fn main() {
             }
 
             Input::Render(args) => {
-                gl.draw(args.viewport(), |c, g| view.render(&simulator.world, &partial_outcome, c, g));
+                gl.draw(args.viewport(), |c, g| view.render(simulator.max_rounds, &simulator.world, &partial_outcome, c, g));
             }
 
             Input::Update(_) => {
-                // 5 rounds per second
-                simulator.run_rounds(rounds_per_update);
-                if view.show_score {
-                    partial_outcome = simulator.partial_outcome();
+                if jump_to_finish {
+                    partial_outcome = simulator.run();
+                } else {
+                    simulator.run_rounds(rounds_per_update);
+                    if view.show_score {
+                        partial_outcome = simulator.partial_outcome();
+                    }
                 }
             }
 

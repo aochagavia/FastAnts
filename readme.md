@@ -35,12 +35,13 @@ can use `cargo build --release` instead.
 
 # Controls
 
-Keyboard                | Action                  | Console output
------------------------ | ------------------------|----------------------------
-Arrow keys              | Move camera around      |
-t                       | Toggle scoreboard       |
-m                       | Toggle mark showing     | Active color
-+ and -                 | Increase/decrease speed | Amount of rounds per second
+Keyboard                | Action                    | Console output
+----------------------- | --------------------------|----------------------------
+Arrow keys              | Move camera around        |
+t                       | Toggle scoreboard         |
+m                       | Toggle mark showing       | Active color
+f                       | Jump to end of simulation |
++ and -                 | Increase/decrease speed   | Amount of rounds per second
 
 Note that, by default, `ant_viz` does not show the marks left by the ants. Also, when toggling
 mark showing, we only show the marks of one team at a time (since we need to display up to 6
