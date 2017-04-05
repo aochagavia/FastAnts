@@ -11,7 +11,7 @@ pub struct Simulator {
     black_instructions: Vec<Instruction>,
     pub ants: Vec<usize>,
     rng: Rng,
-    round: u32,
+    pub round: u32,
     pub max_rounds: u32,
 }
 

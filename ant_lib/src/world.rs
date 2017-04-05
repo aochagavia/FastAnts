@@ -4,6 +4,7 @@ use ant::{Ant, AntColor, AntDirection};
 use util::BitField8;
 
 // Note: the world is 0-indexed
+#[derive(Clone)]
 pub struct World {
     pub cells: Vec<Cell>,
     pub width: usize,
