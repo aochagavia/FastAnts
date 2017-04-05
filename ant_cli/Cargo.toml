@@ -1,7 +1,0 @@
-[package]
-name = "ant_cli"
-version = "0.1.0"
-authors = ["Adolfo Ochagavía <aochagavia92@gmail.com>"]
-
-[dependencies]
-ant_lib = { path = "../ant_lib" }
