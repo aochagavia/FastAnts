@@ -25,6 +25,11 @@ impl Instruction {
         for line in reader.lines() {
             let line = line.unwrap();
             let line = line.trim();
+
+            // Discard everything besides the left side of a ;
+            // (a ; indicates the start of a comment)
+            let line = line.split(';').take(1).next().unwrap_or("");
+
             if line.is_empty() {
                 break;
             }
