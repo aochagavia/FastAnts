@@ -8,7 +8,6 @@ mod camera;
 mod cli;
 mod view;
 
-use std::cmp;
 use std::fs::File;
 use std::io::BufReader;
 use std::process;
@@ -74,7 +73,7 @@ fn main() {
                         println!("[UPDATE] rounds per update: {}", rounds_per_update);
                     }
                     '-' => {
-                        rounds_per_update = cmp::max(0, rounds_per_update - 100);
+                        rounds_per_update = rounds_per_update.saturating_sub(100);
                         println!("[UPDATE] rounds per update: {}", rounds_per_update * UPS);
                     }
                     'm' => {
