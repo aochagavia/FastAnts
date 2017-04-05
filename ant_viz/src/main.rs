@@ -190,7 +190,7 @@ fn load(options: &Options) -> (Vec<Instruction>, Vec<Instruction>, World) {
         test_data::ant1()
     });
 
-    let black = options.red.as_ref().map(|p| Instruction::parse(open_file_or_die(p))).unwrap_or_else(|| {
+    let black = options.black.as_ref().map(|p| Instruction::parse(open_file_or_die(p))).unwrap_or_else(|| {
         println!("No file specified for black ant instructions. Using defaults.");
         test_data::ant1()
     });
