@@ -11,6 +11,7 @@ mod view;
 use std::fs::File;
 use std::io::BufReader;
 use std::process;
+use std::cmp;
 
 use ant_lib::{test_data, AntColor, Instruction, Outcome, Simulator, World};
 use opengl_graphics::GlGraphics;
@@ -69,12 +70,12 @@ fn main() {
 
                 match s.as_bytes()[0] as char {
                     '+' => {
-                        rounds_per_update += 100;
+                        rounds_per_update = cmp::max(1, rounds_per_update * 2);
                         println!("[UPDATE] rounds per update: {}", rounds_per_update);
                     }
                     '-' => {
-                        rounds_per_update = rounds_per_update.saturating_sub(100);
-                        println!("[UPDATE] rounds per update: {}", rounds_per_update * UPS);
+                        rounds_per_update /= 2;
+                        println!("[UPDATE] rounds per update: {}", rounds_per_update);
                     }
                     'm' => {
                         view.toggle_marks();
