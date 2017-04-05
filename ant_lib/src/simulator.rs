@@ -16,7 +16,11 @@ pub struct Simulator {
 }
 
 impl Simulator {
-    pub fn new(mut world: World, red_instructions: Vec<Instruction>, black_instructions: Vec<Instruction>, max_rounds: u32) -> Simulator {
+    pub fn new(mut world: World,
+               red_instructions: Vec<Instruction>,
+               black_instructions: Vec<Instruction>,
+               max_rounds: u32,
+               seed: u32) -> Simulator {
         let ants = world.populate();
 
         Simulator {
@@ -24,10 +28,18 @@ impl Simulator {
             red_instructions,
             black_instructions,
             ants,
-            rng: Rng::new(12345),
+            rng: Rng::new(seed as usize),
             round: 0,
             max_rounds
         }
+    }
+
+    pub fn reset(self, world: World, seed: u32) -> Simulator {
+        Simulator::new(world,
+                       self.red_instructions,
+                       self.black_instructions,
+                       self.max_rounds,
+                       seed)
     }
 
     pub fn one_round(&mut self) {
@@ -81,6 +93,10 @@ impl Simulator {
     }
 
     pub fn run_rounds(&mut self, rounds: u32) {
+        if self.round >= self.max_rounds {
+            return;
+        }
+
         for _ in 0..rounds {
             self.one_round();
         }

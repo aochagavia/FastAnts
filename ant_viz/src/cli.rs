@@ -9,4 +9,8 @@ pub struct Options {
     pub black: Option<String>,
     #[structopt(long = "rounds", help = "The amount of rounds to be executed", default_value = "100000")]
     pub rounds: u32,
+    #[structopt(long = "seed", help = "The seed that will be used by the RNG", default_value = "12345")]
+    pub seed: u32,
+    #[structopt(long = "rps", help = "The amount of rounds that will be executed per second", default_value = "200")]
+    pub rounds_per_second: u32,
 }
